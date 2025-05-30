@@ -1,0 +1,53 @@
+✅ 1. Install Java (OpenJDK 17)
+
+sudo apt update
+sudo apt install openjdk-17-jdk -y
+java -version
+
+✅ 2. Download and Extract Kafka
+
+cd /opt
+sudo wget https://dlcdn.apache.org/kafka/3.9.1/kafka_2.12-3.9.1.tgz
+sudo tar -xvzf kafka_2.12-3.9.1.tgz
+sudo mv kafka_2.12-3.9.1 kafka
+
+✅ 3. Fix Permissions (Recommended)
+Replace ubuntu with your actual username if different:
+
+sudo chown -R ubuntu:ubuntu /opt/kafka
+
+✅ 4. Start Zookeeper
+Open Terminal 1:
+
+cd /opt/kafka
+bin/zookeeper-server-start.sh config/zookeeper.properties
+✅ 5. Start Kafka Server
+Open Terminal 2:
+
+cd /opt/kafka
+bin/kafka-server-start.sh config/server.properties
+✅ 6. Test Kafka
+➤ Create a Topic
+cd /opt/kafka
+bin/kafka-topics.sh --create --topic send-email --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+
+Update Application.properties file: spring.kafka.bootstrap-servers=ec2-3-109-202-53.ap-south-1.compute.amazonaws.com:9092
+
+✅ 6. Modify server.properties file
+
+sudo vim /opt/kafka/config/server.properties
+
+then add
+
+listeners=PLAINTEXT://0.0.0.0:9092
+advertised.listeners=PLAINTEXT://ec2-13-232-203-118.ap-south-1.compute.amazonaws.com:9092
+
+
+AWS Security Group
+Make sure your EC2 instance's security group:
+
+Allows inbound traffic on port 9092 from your client IP or anywhere (0.0.0.0/0 for testing)
+
+Allows inbound traffic on port 2181 if Zookeeper is accessed externally (optional)
+
